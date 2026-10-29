@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Open Messages — JaysonSellsCars test page</title>
+<title>Opening Messages…</title>
 <style>
   body { font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 24px; background: #f6f6f8; color: #111; }
   .card { background: #fff; border-radius: 14px; padding: 20px; max-width: 520px; margin: 24px auto; box-shadow: 0 1px 6px rgba(0,0,0,.08); }
@@ -17,21 +17,23 @@
 </head>
 <body>
 <div class="card">
-  <h1>Text message handoff test</h1>
+  <h1>Opening Messages…</h1>
   <p>This page is a plain, top-level web page — it is <b>not</b> inside Claude. That is the whole point of the test.</p>
   <p><b>To:</b> <span id="to"></span></p>
   <div class="msg" id="msg"></div>
   <a class="btn" id="go" href="#">Open Messages</a>
-  <p class="small">Test page only. Nothing is sent, stored, or tracked by this page. The phone number and
-  message travel in the part of the address after the # sign, which web servers never receive or log.</p>
+  <p class="small">Nothing is stored or tracked by this page. The number and message travel in the part of the address after the # sign, which web servers never receive or log.</p>
   <p class="small" id="mode"></p>
 </div>
 <script>
   var params = new URLSearchParams(location.hash.slice(1));
-  var n = (params.get('n') || '2505550100').replace(/[^0-9+]/g, '');
-  var m = params.get('m') || 'Test message from JaysonSellsCars — the handoff works.';
+  var n = (params.get('n') || '').replace(/[^0-9+]/g, '');
+  var m = params.get('m') || '';
+  if (!n || !m) {
+    document.querySelector('.card').innerHTML = '<h1>Opening Messages…</h1><p>This link is missing its details. Go back and try again.</p>';
+  } else {
   var ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
-  var href = 'sms:' + n + (ios ? '&' : '?') + 'body=' + encodeURIComponent(m);
+  var href = 'sms:+' + n + (ios ? '&' : '?') + 'body=' + encodeURIComponent(m);
   document.getElementById('to').textContent = n;
   document.getElementById('msg').textContent = m;
   document.getElementById('go').href = href;
@@ -39,7 +41,8 @@
     document.getElementById('mode').textContent = 'Auto-open test: Messages should open by itself in a moment, no tap needed.';
     setTimeout(function () { location.href = href; }, 600);
   } else {
-    document.getElementById('mode').textContent = 'Manual test: tap the red button.';
+    document.getElementById('mode').textContent = 'Tap the button below to open Messages with your text filled in.';
+  }
   }
 </script>
 </body>
