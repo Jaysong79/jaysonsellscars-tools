@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Messages — JaysonSellsCars test page</title>
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 24px; background: #f6f6f8; color: #111; }
+  .card { background: #fff; border-radius: 14px; padding: 20px; max-width: 520px; margin: 24px auto; box-shadow: 0 1px 6px rgba(0,0,0,.08); }
+  h1 { font-size: 20px; margin: 0 0 8px; }
+  p { font-size: 16px; line-height: 1.45; }
+  .msg { background: #f0f0f3; border-radius: 10px; padding: 12px; white-space: pre-wrap; }
+  a.btn { display: block; text-align: center; background: #c8102e; color: #fff; font-size: 19px; font-weight: 600;
+          padding: 16px; border-radius: 12px; text-decoration: none; margin-top: 16px; }
+  .small { font-size: 13px; color: #555; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Text message handoff test</h1>
+  <p>This page is a plain, top-level web page — it is <b>not</b> inside Claude. That is the whole point of the test.</p>
+  <p><b>To:</b> <span id="to"></span></p>
+  <div class="msg" id="msg"></div>
+  <a class="btn" id="go" href="#">Open Messages</a>
+  <p class="small">Test page only. Nothing is sent, stored, or tracked by this page. The phone number and
+  message travel in the part of the address after the # sign, which web servers never receive or log.</p>
+  <p class="small" id="mode"></p>
+</div>
+<script>
+  var params = new URLSearchParams(location.hash.slice(1));
+  var n = (params.get('n') || '2505550100').replace(/[^0-9+]/g, '');
+  var m = params.get('m') || 'Test message from JaysonSellsCars — the handoff works.';
+  var ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  var href = 'sms:' + n + (ios ? '&' : '?') + 'body=' + encodeURIComponent(m);
+  document.getElementById('to').textContent = n;
+  document.getElementById('msg').textContent = m;
+  document.getElementById('go').href = href;
+  if (params.get('auto') === '1') {
+    document.getElementById('mode').textContent = 'Auto-open test: Messages should open by itself in a moment, no tap needed.';
+    setTimeout(function () { location.href = href; }, 600);
+  } else {
+    document.getElementById('mode').textContent = 'Manual test: tap the red button.';
+  }
+</script>
+</body>
+</html>
