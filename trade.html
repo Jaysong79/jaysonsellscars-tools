@@ -87,6 +87,19 @@
   .foot .who span{color:var(--red);}
   .foot .meta{font-size:12.5px;color:var(--mute);margin-top:4px;line-height:1.6;}
   .foot a{color:var(--ink);font-weight:700;text-decoration:none;}
+  .footlogo{width:84px;height:auto;margin-bottom:8px;}
+  #interestWrap{display:none;margin:4px 0 14px;}
+  .awesome{font-size:19px;font-weight:800;margin-bottom:2px;}
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .tile{position:relative;width:100%;border:2px solid #e2e6ee;border-radius:14px;overflow:hidden;background:#fff;padding:0;cursor:pointer;font-family:inherit;text-align:left;letter-spacing:0;}
+  .tile img{width:100%;height:92px;object-fit:cover;display:block;background:#eef1f6;}
+  .tile .tname{display:block;padding:8px 10px;font-weight:700;font-size:14px;color:var(--ink);}
+  .tile .star{position:absolute;top:6px;right:8px;font-size:20px;display:none;}
+  .tile[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink) inset;}
+  .tile[aria-pressed="true"] .star{display:block;}
+  .tile.wide{grid-column:1 / -1;}
+  .tile.wide img{height:112px;}
+  button:disabled{opacity:.6;cursor:default;}
 
   #done{display:none;text-align:center;padding:36px 6px 8px;}
   #done .tick{
@@ -182,6 +195,19 @@
             <input type="radio" id="i3" name="intent" value="Just curious"><label for="i3">Just curious</label>
           </div>
         </div>
+        <div id="interestWrap">
+          <div class="awesome">That's awesome!</div>
+          <label style="margin-bottom:2px;">What are you interested in?</label>
+          <p class="hint" style="margin:0 2px 10px;">Tap the ones you like &mdash; Jayson will send you info on each.</p>
+          <div class="tiles">
+            <button type="button" class="tile" data-model="RVR" aria-pressed="false"><img src="model-rvr.jpg" alt="Mitsubishi RVR"><span class="star">&#11088;</span><span class="tname">RVR</span></button>
+            <button type="button" class="tile" data-model="Eclipse Cross" aria-pressed="false"><img src="model-eclipse-cross.jpg" alt="Mitsubishi Eclipse Cross"><span class="star">&#11088;</span><span class="tname">Eclipse Cross</span></button>
+            <button type="button" class="tile" data-model="Outlander" aria-pressed="false"><img src="model-outlander.jpg" alt="Mitsubishi Outlander"><span class="star">&#11088;</span><span class="tname">Outlander</span></button>
+            <button type="button" class="tile" data-model="Outlander PHEV" aria-pressed="false"><img src="model-outlander-phev.jpg" alt="Mitsubishi Outlander PHEV"><span class="star">&#11088;</span><span class="tname">Outlander PHEV</span></button>
+            <button type="button" class="tile wide" data-model="Eclipse Cross Sportback EV" aria-pressed="false"><img src="model-ev.jpg" alt="Mitsubishi Eclipse Cross Sportback EV"><span class="star">&#11088;</span><span class="tname">Eclipse Cross Sportback EV</span></button>
+          </div>
+          <input type="hidden" name="interested_in" id="interestedIn" value="">
+        </div>
         <div class="field" style="margin-bottom:2px;">
           <label>Condition</label>
           <div class="chips">
@@ -228,7 +254,7 @@
         <span><b>Yes — send me my trade-in value.</b> I agree JaysonSellsCars and Valley Mitsubishi may contact me by phone, text, or email about my trade-in. No obligation, ever.</span>
       </label>
 
-      <button type="submit">Get my trade-in value</button>
+      <button type="submit" id="goBtn">Get my trade-in value</button>
       <p class="fineprint">Your details go only to Jayson. Never sold. Never shared.</p>
     </form>
     <iframe name="lead_iframe" id="lead_iframe" style="display:none" title=""></iframe>
@@ -242,6 +268,7 @@
   </div>
 
   <div class="foot">
+    <img class="footlogo" src="logo-badge.png" alt="JaysonSellsCars">
     <div class="who">Jayson Gazloff <span>&#9733;</span> Sales Consultant</div>
     <div class="meta">Valley Mitsubishi &bull; 2350 Enterprise Way, Kelowna, BC &bull; Dealer #30446<br>
     <a href="tel:+17783631453">778-363-1453</a></div>
@@ -398,9 +425,30 @@
       });
   }
 
+  var interestWrap = document.getElementById('interestWrap');
+  var interestedIn = document.getElementById('interestedIn');
+  var picked = [];
+  document.querySelectorAll('input[name="intent"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      var c = document.querySelector('input[name="intent"]:checked');
+      interestWrap.style.display = (c && c.value === 'Trading it in') ? 'block' : 'none';
+    });
+  });
+  document.querySelectorAll('.tile').forEach(function (t) {
+    t.addEventListener('click', function () {
+      var on = t.getAttribute('aria-pressed') === 'true';
+      t.setAttribute('aria-pressed', on ? 'false' : 'true');
+      var m = t.getAttribute('data-model');
+      picked = picked.filter(function (x) { return x !== m; });
+      if (!on) picked.push(m);
+      interestedIn.value = picked.join(', ');
+    });
+  });
+
   var submitted = false;
   var form = document.getElementById('leadform');
   form.addEventListener('submit', function () {
+    if (submitted) return;
     var fn = document.getElementById('fn').value.trim();
     var ln = document.getElementById('ln').value.trim();
     document.getElementById('customer_first_name').value = fn;
@@ -426,7 +474,12 @@
       makeSel.name = 'vehicle_make';
       makeOther.name = '';
     }
+    var iv = document.querySelector('input[name="intent"]:checked');
+    if (!iv || iv.value !== 'Trading it in') interestedIn.value = '';
     submitted = true;
+    var gb = document.getElementById('goBtn');
+    gb.disabled = true;
+    gb.textContent = 'Sending…';
   });
   document.getElementById('lead_iframe').addEventListener('load', function () {
     if (!submitted) return;
