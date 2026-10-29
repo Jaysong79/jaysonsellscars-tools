@@ -106,9 +106,13 @@
   <div id="formview">
     <div class="eyebrow">Valley Mitsubishi &bull; Service</div>
     <h1>What's your vehicle worth?</h1>
-    <p class="sub">Get a <b>real trade-in value</b> from a real person &mdash; not a computer guess.</p>
+    <p class="sub">Get a <b>real trade-in value</b> from a real person &mdash; not a computer guess. Trade it in or <b>sell it to us outright</b> &mdash; your choice.</p>
     <div class="free"><i>&#9679;</i>&nbsp; Free &nbsp;&middot;&nbsp; No obligation &nbsp;&middot;&nbsp; Takes 30 seconds</div>
-    <p style="font-size:13.5px;color:var(--mute);margin:-12px 0 22px;">Trade-in values based on <b style="color:var(--ink);">Canadian Black Book</b> market data.</p>
+    <p style="font-size:13.5px;color:var(--mute);margin:-12px 0 14px;">Trade-in values based on <b style="color:var(--ink);">Canadian Black Book</b> market data.</p>
+    <div style="display:flex;align-items:center;gap:26px;margin:0 0 24px;">
+      <img src="cbb-logo.svg" alt="Canadian Black Book" style="height:30px;width:auto;display:block;">
+      <img src="carfax-logo.svg" alt="CARFAX Canada" style="height:24px;width:auto;display:block;">
+    </div>
 
     <div class="steps">
       <div class="step"><div class="n">1</div><div class="t">Tell us your vehicle</div><div class="d">30 seconds, right here.</div></div>
@@ -124,6 +128,8 @@
       <input type="hidden" name="lead_source_detail" value="Service department QR sign">
       <input type="hidden" name="autoresponse_subject" value="Your trade-in value request — JaysonSellsCars">
       <input type="hidden" name="autoresponse_text" value="Thanks for asking what your vehicle is worth. Jayson Gazloff, Sales Consultant at Valley Mitsubishi in Kelowna, will appraise it personally and send you a no-obligation trade-in value — usually the same day. Want to talk sooner? Call or text Jayson at 778-363-1453.">
+
+      <p style="font-size:14px;color:#3c4043;margin:-8px 0 22px;">Still making payments on it? <b>No problem</b> &mdash; you can still get your value.</p>
 
       <div class="group">
         <div class="group-title">Your vehicle</div>
@@ -145,6 +151,14 @@
           <div class="field">
             <label for="vkm">Kilometres</label>
             <input type="number" id="vkm" name="vehicle_kilometres" inputmode="numeric" placeholder="82,000" min="0" max="2000000">
+          </div>
+        </div>
+        <div class="field">
+          <label>I'm thinking of</label>
+          <div class="chips">
+            <input type="radio" id="i1" name="intent" value="Trading it in"><label for="i1">Trading it in</label>
+            <input type="radio" id="i2" name="intent" value="Selling it outright"><label for="i2">Selling it outright</label>
+            <input type="radio" id="i3" name="intent" value="Just curious"><label for="i3">Just curious</label>
           </div>
         </div>
         <div class="field" style="margin-bottom:2px;">
