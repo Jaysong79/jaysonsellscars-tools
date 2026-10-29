@@ -21,11 +21,6 @@
   }
   .wrap{max-width:560px;margin:0 auto;padding:28px 22px 40px;}
 
-  .brandbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:34px;}
-  .brandbar .brand{font-weight:800;font-size:17px;letter-spacing:.2px;}
-  .brandbar .brand span{color:var(--red);}
-  .brandbar .partner{font-size:11px;color:var(--mute);text-align:right;line-height:1.35;}
-
   .eyebrow{color:var(--red);font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;}
   h1{font-size:40px;line-height:1.08;font-weight:800;letter-spacing:-.5px;margin-bottom:12px;}
   .sub{font-size:17px;color:#3c4043;margin-bottom:6px;}
@@ -37,14 +32,22 @@
   .group{margin-bottom:22px;}
   .group-title{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mute);margin-bottom:12px;}
   label{display:block;font-size:14px;font-weight:600;margin:0 0 7px 2px;}
-  input[type=text],input[type=tel],input[type=email],input[type=number]{
+  input[type=text],input[type=tel],input[type=email],input[type=number],select{
     width:100%;font-size:17px;padding:15px 16px;border:1px solid transparent;border-radius:12px;
     background:var(--field);color:var(--ink);outline:none;appearance:none;-webkit-appearance:none;
   }
-  input:focus{border-color:var(--ink);background:#fff;}
+  select{
+    background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23171A20' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 16px center;padding-right:40px;
+  }
+  input:focus,select:focus{border-color:var(--ink);background-color:#fff;}
   .row{display:flex;gap:12px;}
   .row>div{flex:1;}
   .field{margin-bottom:14px;}
+  .hint{font-size:12.5px;color:var(--mute);margin:7px 2px 0;line-height:1.5;}
+  #vin-status{font-size:13.5px;font-weight:600;margin:8px 2px 0;display:none;line-height:1.5;}
+  #vin-status.ok{color:#157347;display:block;}
+  #vin-status.bad{color:#9a6a00;display:block;}
 
   .chips{display:flex;flex-wrap:wrap;gap:9px;}
   .chips input{position:absolute;opacity:0;pointer-events:none;}
@@ -118,7 +121,9 @@
     <form id="leadform" method="POST" target="lead_iframe"
           action="https://script.google.com/macros/s/AKfycbxiEU_tIiLuHzxYLGrF9EB-xGLU0WCW1DoyOz3STTlVWE_4AS27oWQfxr563EU3phhy9w/exec">
       <input type="hidden" name="form_kind" value="Service Trade-In Value">
-      <input type="hidden" name="customer_first_name" id="first_name" value="">
+      <input type="hidden" name="customer_name" id="customer_name" value="">
+      <input type="hidden" name="customer_first_name" id="customer_first_name" value="">
+      <input type="hidden" name="customer_last_name" id="customer_last_name" value="">
       <input type="hidden" name="vehicle" id="vehicle_summary" value="">
       <input type="hidden" name="lead_source_detail" value="Service department QR sign">
       <input type="hidden" name="autoresponse_subject" value="Your trade-in value request — JaysonSellsCars">
@@ -128,25 +133,46 @@
 
       <div class="group">
         <div class="group-title">Your vehicle</div>
+        <div class="field">
+          <label for="vvin">VIN (optional — but the fastest way)</label>
+          <input type="text" id="vvin" name="vehicle_vin" maxlength="17" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="17 characters">
+          <p class="hint">It's on your dash (driver's side), your door jamb, or your service invoice. Enter it and we'll fill in your vehicle for you — and Jayson gets the full factory details.</p>
+          <p id="vin-status"></p>
+        </div>
         <div class="row">
           <div class="field" style="flex:.62">
             <label for="vy">Year</label>
-            <input type="number" id="vy" name="vehicle_year" inputmode="numeric" placeholder="2019" min="1950" max="2030" required>
+            <select id="vy" name="vehicle_year" required>
+              <option value="" selected>Year</option>
+            </select>
           </div>
           <div class="field">
             <label for="vmk">Make</label>
-            <input type="text" id="vmk" name="vehicle_make" placeholder="Honda" autocomplete="off" required>
+            <select id="vmk" name="vehicle_make" required>
+              <option value="" selected>Make</option>
+            </select>
+            <input type="text" id="vmk_other" placeholder="Type your make" autocomplete="off" style="display:none;margin-top:10px;">
           </div>
         </div>
         <div class="row">
           <div class="field">
             <label for="vmd">Model</label>
-            <input type="text" id="vmd" name="vehicle_model" placeholder="CR-V" autocomplete="off" required>
+            <select id="vmd" required>
+              <option value="" selected>Pick a make first</option>
+            </select>
+            <input type="text" id="vmd_other" placeholder="Type your model" autocomplete="off" style="display:none;margin-top:10px;">
           </div>
+          <div class="field">
+            <label for="vtr">Trim (optional)</label>
+            <input type="text" id="vtr" name="vehicle_trim" placeholder="e.g. EX-L, Limited" autocomplete="off">
+          </div>
+        </div>
+        <div class="row">
           <div class="field">
             <label for="vkm">Kilometres</label>
             <input type="number" id="vkm" name="vehicle_kilometres" inputmode="numeric" placeholder="82,000" min="0" max="2000000">
           </div>
+          <div class="field"></div>
         </div>
         <div class="field">
           <label>I'm thinking of</label>
@@ -169,9 +195,15 @@
 
       <div class="group">
         <div class="group-title">Where do we send your value?</div>
-        <div class="field">
-          <label for="nm">Your name</label>
-          <input type="text" id="nm" name="customer_name" placeholder="First and last name" autocomplete="name" required>
+        <div class="row">
+          <div class="field">
+            <label for="fn">First name</label>
+            <input type="text" id="fn" placeholder="First name" autocomplete="given-name" required>
+          </div>
+          <div class="field">
+            <label for="ln">Last name</label>
+            <input type="text" id="ln" placeholder="Last name" autocomplete="family-name" required>
+          </div>
         </div>
         <div class="field">
           <label for="ph">Mobile phone</label>
@@ -218,28 +250,187 @@
 </div>
 
 <script>
+  var MAKES = ["Acura","Alfa Romeo","Aston Martin","Audi","Bentley","BMW","Buick","Cadillac","Chevrolet","Chrysler","Dodge","Ferrari","Fiat","Ford","Genesis","GMC","Honda","Hummer","Hyundai","Infiniti","Jaguar","Jeep","Kia","Lamborghini","Land Rover","Lexus","Lincoln","Lotus","Maserati","Mazda","McLaren","Mercedes-Benz","Mercury","Mini","Mitsubishi","Nissan","Oldsmobile","Pontiac","Porsche","Ram","Rolls-Royce","Saturn","Scion","Smart","Subaru","Suzuki","Tesla","Toyota","Volkswagen","Volvo"];
+  var MODELS = {
+    "Acura": ["ILX","Integra","MDX","RDX","TLX","TL","TSX","RL","RLX","ZDX","RSX","CSX","EL"],
+    "Alfa Romeo": ["Giulia","Stelvio","Tonale","4C","Giulietta"],
+    "Audi": ["A3","A4","A5","A6","A7","A8","Q3","Q5","Q7","Q8","e-tron","Q4 e-tron","TT","R8","S3","S4","S5","SQ5","RS 5","RS Q8"],
+    "BMW": ["2 Series","3 Series","4 Series","5 Series","7 Series","8 Series","X1","X2","X3","X4","X5","X6","X7","XM","Z4","i4","i5","i7","iX","M2","M3","M4","M5","X3 M","X5 M"],
+    "Buick": ["Encore","Encore GX","Envision","Enclave","Encore Preferred","LaCrosse","Regal","Verano","Lucerne","Enclave Avenir"],
+    "Cadillac": ["CT4","CT5","XT4","XT5","XT6","Escalade","Escalade ESV","Lyriq","ATS","CTS","XTS","SRX","ELR"],
+    "Chevrolet": ["Silverado 1500","Silverado 2500HD","Silverado 3500HD","Colorado","Equinox","Equinox EV","Traverse","Tahoe","Suburban","Blazer","Blazer EV","Trailblazer","Trax","Malibu","Camaro","Corvette","Spark","Sonic","Cruze","Impala","Volt","Bolt EV","Bolt EUV","Avalanche","Express"],
+    "Chrysler": ["Pacifica","Grand Caravan","300","200","Town & Country","Voyager"],
+    "Dodge": ["Charger","Challenger","Durango","Hornet","Grand Caravan","Journey","Avenger","Dart","Nitro","Caliber","Ram 1500 (pre-2011)"],
+    "Fiat": ["500","500X","500e","500L","124 Spider"],
+    "Ford": ["F-150","F-250 Super Duty","F-350 Super Duty","Ranger","Maverick","Escape","Explorer","Expedition","Edge","Bronco","Bronco Sport","Mustang","Mustang Mach-E","Transit","Transit Connect","Fusion","Focus","Fiesta","Taurus","Flex","EcoSport","E-150","E-250","E-350"],
+    "Genesis": ["G70","G80","G90","GV60","GV70","GV80"],
+    "GMC": ["Sierra 1500","Sierra 2500HD","Sierra 3500HD","Canyon","Yukon","Yukon XL","Acadia","Terrain","Savana","Hummer EV","Envoy"],
+    "Honda": ["Civic","Accord","CR-V","Pilot","Passport","Ridgeline","HR-V","Odyssey","Insight","Fit","Element","Crosstour","CR-Z","Clarity"],
+    "Hummer": ["H2","H3"],
+    "Hyundai": ["Elantra","Sonata","Kona","Tucson","Santa Fe","Palisade","Venue","Santa Cruz","Ioniq 5","Ioniq 6","Ioniq","Accent","Veloster","Genesis (pre-2017)","Equus","Veracruz","Santa Fe XL"],
+    "Infiniti": ["Q50","Q60","QX50","QX55","QX60","QX80","G37","G35","EX35","FX35","JX35","QX70","QX56"],
+    "Jaguar": ["XE","XF","XJ","E-PACE","F-PACE","I-PACE","F-TYPE","XK"],
+    "Jeep": ["Wrangler","Gladiator","Grand Cherokee","Grand Cherokee L","Cherokee","Compass","Renegade","Wagoneer","Grand Wagoneer","Liberty","Patriot","Commander","Wrangler Unlimited"],
+    "Kia": ["Forte","K4","K5","Rio","Soul","Seltos","Sportage","Sorento","Telluride","Carnival","EV6","EV9","EV3","Niro","Stinger","Optima","Sedona","Rondo","Borrego","Cadenza","K900"],
+    "Land Rover": ["Range Rover","Range Rover Sport","Range Rover Evoque","Range Rover Velar","Discovery","Discovery Sport","Defender","LR2","LR4"],
+    "Lexus": ["IS","ES","GS","LS","UX","NX","RX","GX","LX","TX","RZ","RC","LC","CT","HS"],
+    "Lincoln": ["Corsair","Nautilus","Aviator","Navigator","MKZ","MKX","MKC","MKS","MKT","MK S","Continental","Zephyr"],
+    "Mazda": ["Mazda2","Mazda3","Mazda5","Mazda6","CX-3","CX-30","CX-5","CX-50","CX-70","CX-90","CX-9","MX-5 Miata","MX-30","RX-8","Tribute","CX-7"],
+    "Mercedes-Benz": ["A-Class","C-Class","E-Class","S-Class","CLA","CLS","GLA","GLB","GLC","GLE","GLS","G-Class","EQB","EQE","EQS","SL","AMG GT","Sprinter","Metris","B-Class","ML","GLK","GL"],
+    "Mini": ["Cooper","Cooper S","Countryman","Clubman","Convertible","Paceman","Coupe","Electric"],
+    "Mitsubishi": ["Outlander","Outlander PHEV","Eclipse Cross","RVR","Mirage","Lancer","Galant","Eclipse","Endeavor","Outlander Sport"],
+    "Nissan": ["Sentra","Altima","Maxima","Versa","Leaf","Rogue","Rogue Sport","Murano","Pathfinder","Armada","Frontier","Titan","Kicks","Qashqai","Juke","370Z","GT-R","Z","Xterra","Cube","Micra","Ariya"],
+    "Pontiac": ["Grand Prix","G5","G6","Vibe","Wave","Sunfire","Montana","Torrent","Solstice","Bonneville","Grand Am","Aztek","G3","G8"],
+    "Porsche": ["911","718 Cayman","718 Boxster","Panamera","Taycan","Macan","Cayenne"],
+    "Ram": ["1500","2500","3500","ProMaster","ProMaster City","1500 Classic","TRX"],
+    "Saturn": ["Vue","Ion","Aura","Outlook","Astra","Sky","L-Series","S-Series"],
+    "Scion": ["tC","xB","xD","iQ","FR-S","iM","iA"],
+    "Smart": ["fortwo","fortwo electric"],
+    "Subaru": ["Impreza","Legacy","Outback","Forester","Crosstrek","Ascent","BRZ","WRX","WRX STI","Solterra","Tribeca","XV Crosstrek","Baja"],
+    "Suzuki": ["Grand Vitara","SX4","Swift+","XL-7","Kizashi","Equator","Aerio","Forenza"],
+    "Tesla": ["Model 3","Model Y","Model S","Model X","Cybertruck"],
+    "Toyota": ["Corolla","Camry","RAV4","Highlander","Tacoma","Tundra","4Runner","Sequoia","Sienna","Prius","Prius Prime","Venza","C-HR","Supra","GR86","86","bZ4X","Crown","Land Cruiser","Yaris","Matrix","Avalon","FJ Cruiser","Celica","Echo","RAV4 Prime","Corolla Cross","Grand Highlander"],
+    "Volkswagen": ["Jetta","Passat","Golf","Golf GTI","Golf R","Tiguan","Atlas","Atlas Cross Sport","Taos","ID.4","ID. Buzz","Beetle","CC","Touareg","Routan","Eos","Rabbit"],
+    "Volvo": ["S60","S90","V60","V90","XC40","XC60","XC90","EX30","EX90","C40","C30","S40","S80","XC70"]
+  };
+
+  var yearSel = document.getElementById('vy');
+  var makeSel = document.getElementById('vmk');
+  var modelSel = document.getElementById('vmd');
+  var modelOther = document.getElementById('vmd_other');
+  var makeOther = document.getElementById('vmk_other');
+  var trimIn = document.getElementById('vtr');
+  var vinIn = document.getElementById('vvin');
+  var vinStatus = document.getElementById('vin-status');
+
+  for (var y = 2027; y >= 2005; y--) {
+    var o = document.createElement('option'); o.value = y; o.textContent = y; yearSel.appendChild(o);
+  }
+  var old = document.createElement('option'); old.value = '2004 or older'; old.textContent = '2004 or older'; yearSel.appendChild(old);
+
+  MAKES.forEach(function (m) {
+    var o = document.createElement('option'); o.value = m; o.textContent = m; makeSel.appendChild(o);
+  });
+  var mo = document.createElement('option'); mo.value = 'Other'; mo.textContent = 'Other'; makeSel.appendChild(mo);
+
+  function setModels(make, preselect) {
+    modelSel.innerHTML = '';
+    var list = MODELS[make] || [];
+    var ph = document.createElement('option'); ph.value = '';
+    ph.textContent = list.length ? 'Model' : 'Other — type it';
+    modelSel.appendChild(ph);
+    list.forEach(function (m) {
+      var o = document.createElement('option'); o.value = m; o.textContent = m; modelSel.appendChild(o);
+    });
+    var oo = document.createElement('option'); oo.value = 'Other'; oo.textContent = 'Other'; modelSel.appendChild(oo);
+    if (preselect) {
+      var found = false;
+      for (var i = 0; i < modelSel.options.length; i++) {
+        if (modelSel.options[i].value.toLowerCase() === preselect.toLowerCase()) { modelSel.value = modelSel.options[i].value; found = true; break; }
+      }
+      if (!found) { modelSel.value = 'Other'; modelOther.value = preselect; }
+    }
+    syncModelField();
+  }
+
+  function syncModelField() {
+    if (modelSel.value === 'Other') {
+      modelOther.style.display = 'block';
+      modelOther.required = true;
+      modelOther.name = 'vehicle_model';
+      modelSel.name = '';
+      modelSel.required = false;
+    } else {
+      modelOther.style.display = 'none';
+      modelOther.required = false;
+      modelOther.name = '';
+      modelSel.name = 'vehicle_model';
+      modelSel.required = true;
+    }
+  }
+  function syncMakeField() {
+    if (makeSel.value === 'Other') {
+      makeOther.style.display = 'block';
+      makeOther.required = true;
+    } else {
+      makeOther.style.display = 'none';
+      makeOther.required = false;
+    }
+  }
+  modelSel.addEventListener('change', syncModelField);
+  makeSel.addEventListener('change', function () { syncMakeField(); setModels(makeSel.value); });
+  modelSel.name = 'vehicle_model';
+
+  var lastDecoded = '';
+  vinIn.addEventListener('input', function () {
+    var v = vinIn.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    vinIn.value = v;
+    if (v.length === 17 && v !== lastDecoded) { lastDecoded = v; decodeVin(v); }
+  });
+
+  function decodeVin(vin) {
+    vinStatus.className = ''; vinStatus.style.display = 'block'; vinStatus.textContent = 'Looking up your vehicle…';
+    fetch('https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/' + encodeURIComponent(vin) + '?format=json')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var res = (data && data.Results && data.Results[0]) || {};
+        var yr = (res.ModelYear || '').trim();
+        var mk = (res.Make || '').trim();
+        var md = (res.Model || '').trim();
+        var tr = (res.Trim || res.Series || '').trim();
+        if (!mk && !md) throw new Error('no decode');
+        if (yr) { for (var i = 0; i < yearSel.options.length; i++) { if (yearSel.options[i].value === yr) yearSel.value = yr; } }
+        var makeMatch = null;
+        MAKES.forEach(function (m) { if (m.toLowerCase() === mk.toLowerCase()) makeMatch = m; });
+        if (makeMatch) {
+          makeSel.value = makeMatch; syncMakeField(); setModels(makeMatch, md);
+        } else if (mk) {
+          makeSel.value = 'Other'; syncMakeField(); makeOther.value = mk;
+          setModels('Other'); modelSel.value = 'Other'; syncModelField(); modelOther.value = md;
+        }
+        if (tr) trimIn.value = tr;
+        vinStatus.className = 'ok';
+        vinStatus.textContent = '✓ Found it: ' + [yr, mk, md, tr].filter(Boolean).join(' ') + ' — check it looks right below, and fix anything that doesn\'t.';
+      })
+      .catch(function () {
+        vinStatus.className = 'bad';
+        vinStatus.textContent = 'We couldn\'t read that VIN — no problem, just fill in your vehicle below.';
+      });
+  }
+
   var submitted = false;
   var form = document.getElementById('leadform');
   form.addEventListener('submit', function () {
-    var name = document.getElementById('nm').value.trim();
-    var first = name.split(' ')[0] || '';
-    document.getElementById('first_name').value = first;
+    var fn = document.getElementById('fn').value.trim();
+    var ln = document.getElementById('ln').value.trim();
+    document.getElementById('customer_first_name').value = fn;
+    document.getElementById('customer_last_name').value = ln;
+    document.getElementById('customer_name').value = (fn + ' ' + ln).trim();
 
-    var y = document.getElementById('vy').value.trim();
-    var mk = document.getElementById('vmk').value.trim();
-    var md = document.getElementById('vmd').value.trim();
+    var y = yearSel.value.trim();
+    var mk = makeSel.value === 'Other' ? makeOther.value.trim() : makeSel.value.trim();
+    var md = modelSel.value === 'Other' ? modelOther.value.trim() : modelSel.value.trim();
+    var tr = trimIn.value.trim();
     var km = document.getElementById('vkm').value.trim();
     var condEl = document.querySelector('input[name="vehicle_condition"]:checked');
     var cond = condEl ? condEl.value : '';
-    var summary = (y + ' ' + mk + ' ' + md).trim();
+    var summary = (y + ' ' + mk + ' ' + md + (tr ? ' ' + tr : '')).trim();
     if (km) summary += ' — ' + Number(km).toLocaleString('en-CA') + ' km';
     if (cond) summary += ' — ' + cond;
     document.getElementById('vehicle_summary').value = summary;
+
+    if (makeSel.value === 'Other') {
+      makeSel.name = '';
+      makeOther.name = 'vehicle_make';
+    } else {
+      makeSel.name = 'vehicle_make';
+      makeOther.name = '';
+    }
     submitted = true;
   });
   document.getElementById('lead_iframe').addEventListener('load', function () {
     if (!submitted) return;
-    var first = document.getElementById('first_name').value;
+    var first = document.getElementById('fn').value.trim();
     if (first) document.getElementById('done-title').textContent = 'Thanks, ' + first + '.';
     document.getElementById('formview').style.display = 'none';
     document.getElementById('done').style.display = 'block';
