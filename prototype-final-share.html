@@ -213,8 +213,15 @@
   .guide h3{font-size:19px;font-weight:800;text-transform:none;letter-spacing:0;line-height:1.25;margin:10px 0 8px;font-family:'Inter Tight'}
   .guide p{font-size:14px;color:var(--mute-l);line-height:1.55}
 
+  #mnav-btn{display:none;margin-left:auto;background:none;border:1px solid #D8D5CE;border-radius:8px;width:44px;height:44px;font-size:21px;cursor:pointer;color:#141519;align-items:center;justify-content:center}
+  #mnav{display:none;background:#fff;border-bottom:1px solid #E4E2DC;padding:8px 20px 14px}
+  #mnav.open{display:block}
+  #mnav a{display:block;padding:13px 4px;font-family:'Inter Tight';font-weight:700;font-size:17px;color:#141519;border-bottom:1px solid #F0EEE9;text-decoration:none}
+  #mnav a:last-child{border-bottom:none}
+  #mnav a.red{color:#E60012}
   @media (max-width:960px){
     nav{display:none}
+    #mnav-btn{display:flex}
     .intent .tiles{grid-template-columns:1fr 1fr}
     .grid-cards{grid-template-columns:1fr 1fr}
     .steps3,.trio,.proof .grid,.guides{grid-template-columns:1fr}
@@ -359,8 +366,18 @@
       <div class="hphone"><small>Call or text</small>778-363-1453</div>
       <a class="btn btn-red" href="#" onclick="openLead('Test drive request','Book a test drive');return false">Book a Test Drive</a>
     </div>
+    <button id="mnav-btn" onclick="toggleMenu()" aria-label="Open menu">\u2630</button>
   </div>
 </header>
+<div id="mnav">
+  <a href="#" onclick="closeMenu();go('home');return false">Home</a>
+  <a href="#" onclick="closeMenu();go('shopnew');return false">Shop New</a>
+  <a href="#" onclick="closeMenu();go('shop');return false">Shop Pre-Owned</a>
+  <a href="#" onclick="closeMenu();go('tools');return false">Tools</a>
+  <a href="#" onclick="closeMenu();go('home','trade');return false">Trade-In</a>
+  <a href="#" onclick="closeMenu();openLead('General enquiry','Contact Jayson');return false">Contact</a>
+  <a class="red" href="#" onclick="closeMenu();openLead('Test drive request','Book a test drive');return false">Book a Test Drive</a>
+</div>
 
 <!-- ==================== HOME VIEW ==================== -->
 <main id="view-home" class="view on">
@@ -750,6 +767,8 @@ function renderShop(){
 }
 /* ---------- vehicle view ---------- */
 let curVeh=null;
+function toggleMenu(){ document.getElementById('mnav').classList.toggle('open'); }
+function closeMenu(){ document.getElementById('mnav').classList.remove('open'); }
 function studioImg(v){ const c=colourImg(v); return 'https://jaysong79.github.io/jaysonsellscars-tools/assets/studio-'+c.split('/').pop(); }
 const MODEL_GALLERY={'Outlander PHEV':['https://jaysong79.github.io/jaysonsellscars-tools/assets/phev-g1.jpg','https://jaysong79.github.io/jaysonsellscars-tools/assets/phev-g2.jpg','https://jaysong79.github.io/jaysonsellscars-tools/assets/phev-g3.jpg','https://jaysong79.github.io/jaysonsellscars-tools/assets/phev-g4.jpg','https://jaysong79.github.io/jaysonsellscars-tools/assets/phev-g5.jpg']};
 function capText(i){ const vs=window.__galViews, v=window.__galVeh; if(!vs||!v) return ''; return vs[i].cap==='exact' ? 'Manufacturer image \u2014 '+v.year+' '+v.model+' '+v.trim+' in '+v.colour+'. This vehicle is brand new at Valley Mitsubishi; ask Jayson and he\u2019ll send real photos of the actual unit.' : v.model+' \u2014 Mitsubishi Canada photo. Interior and equipment may vary by trim; the first view shows this exact vehicle\u2019s trim and colour.'; }
