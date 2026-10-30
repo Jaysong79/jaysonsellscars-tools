@@ -660,7 +660,7 @@ const fmt$=n=>'$'+Math.round(n).toLocaleString('en-CA');
 const fmtKm=n=>n===0?'New':n.toLocaleString('en-CA')+' km';
 /* PROTOTYPE: photos are local mirrors. PRODUCTION: this same function returns the live dealer-CDN URL —
    https://imagescdn.d2cmedia.ca/4726/${pid}/${i}/${slug}-${year}.jpg — generated from the feed ID (pattern verified Oct 29). */
-const photo=(v,i)=>`proto-photos/${v.pid}-${i||1}.jpg`;
+const photo=(v,i)=>`https://imagescdn.d2cmedia.ca/4726/${v.pid}/${i||1}/${v.slug}-${v.year}.jpg`;
 const USED=VEHICLES.filter(v=>v.cond==='Used');
 const NEWV=VEHICLES.filter(v=>v.cond==='New');
 let shopMode='U';
