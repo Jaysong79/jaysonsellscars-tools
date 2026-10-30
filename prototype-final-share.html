@@ -432,11 +432,10 @@
       </div>
       <div class="lrail" id="lineup-rail"></div>
       <div class="mtools">
-        <a class="mtool" href="https://www.mitsubishi-motors.ca/en/buy/configure-your-mitsubishi1" target="_blank" rel="noopener"><b>Build &amp; Price</b><span>Mitsubishi Canada's official builder. Configure your model, trim and options — then send Jayson the summary and he'll check Kelowna stock and current incentives against it.</span><em>Open the official tool →</em></a>
-        <a class="mtool" href="https://www.mitsubishi-motors.ca/en/buy/payment-calculator" target="_blank" rel="noopener"><b>Payment Calculator</b><span>Mitsubishi Canada's official calculator — cash, lease or finance, with the current programs built in.</span><em>Open the official tool →</em></a>
-        <a class="mtool" href="https://www.mitsubishi-motors.ca/en/electrification/phev-vs-gas-calculator" target="_blank" rel="noopener"><b>PHEV vs Gas Savings</b><span>What could the Outlander PHEV save you on your actual commute? Mitsubishi Canada's official savings calculator.</span><em>Open the official tool →</em></a>
-      </div>
-      <p class="mnote">The same official Mitsubishi Canada tools, one click from here — with Jayson as your local guide through all of them.</p>
+        <a class="mtool" href="https://www.jaysonsellscarsandtrucks.ca/build-price" target="_blank" rel="noopener"><b>Build &amp; Price</b><span>Configure your Mitsubishi right here on Jayson's site — model, trim, colour and options — and the summary comes straight to him.</span><em>Build yours →</em></a>
+        <a class="mtool" href="#" onclick="go('tools');return false"><b>Payment Calculator</b><span>Jayson's own calculator with real BC tax math. Run your numbers — down payment, trade, term — and send him the result if you want it checked.</span><em>Run your numbers →</em></a>
+        <a class="mtool" href="https://www.jaysonsellscarsandtrucks.ca/get-pre-approved" target="_blank" rel="noopener"><b>Get Pre-Approved</b><span>Know where you stand before you shop. A few minutes, no obligation — and it lands with Jayson personally, not a call centre.</span><em>Start now →</em></a>
+        <p class="mnote">Jayson’s own tools, right here on his site — and every result comes back to him personally.</p>
     </div>
   </section>
 
@@ -709,7 +708,7 @@ function cardHTML(v,rail){
     <div class="vb">
       <h3 onclick="openVehicle('${v.stock}')">${v.year} ${v.make} ${v.model}</h3>
       <div class="meta">${v.trim} · ${v.colour}<br>${fmtKm(v.km)} · Stock ${v.stock}</div>
-      <div class="price">${fmt$(v.price)}</div><div class="mo">${anyEstLine(v)}</div>
+      <div class="price">${fmt$(v.price)}</div>
       <div class="vrow">
         <a class="btn btn-red" href="#" onclick="openVehicle('${v.stock}');openLead('Test drive — ${v.year} ${v.make} ${v.model} (Stock ${v.stock})','Drive this one');return false">Drive this one</a>
         <button class="cmp-add ${inCmp?'on':''}" title="Add to compare" onclick="toggleCompare('${v.stock}',this)">${inCmp?'✓':'+'}</button>
@@ -801,7 +800,7 @@ function openVehicle(stock){
      <div>
        <div class="specbox">
          <div class="price">${fmt$(v.price)}</div>
-         <div class="mo">${v.cond==='New' ? (()=>{const o=offerFor(v);return o?`${newEstLine(v)}<br><span style="font-size:12.5px">Finance from ${o.apr.toFixed(2)}% for ${o.term} mo · Lease from ${o.lease}${o.note?' · '+o.note:''}${o.bonus?'<br>'+o.bonus:''}<br>Offers checked ${OFFERS.checked} · valid until ${OFFERS.ends} · OAC, qualifying buyers · not an offer of credit.</span>`:'Current Mitsubishi Canada offer rates apply — ask Jayson.'})() : estLine(v)+' — estimate only, not an offer of credit.'}</div>
+
          <div class="specs">
            <div><span>Kilometres</span>${fmtKm(v.km)}</div>
            <div><span>Colour</span>${v.colour}</div>
@@ -869,7 +868,6 @@ function renderCompare(){
     <tr><th></th>${vs.map(v=>`<td><img src="${photo(v)}" alt="" ${FALLBACK}></td>`).join('')}</tr>
     ${row('Vehicle',v=>`<b>${v.year} ${v.make} ${v.model}</b><br><span style="color:var(--mute-l)">${v.trim}</span>`)}
     ${row('Price',v=>`<b>${fmt$(v.price)}</b>`)}
-    ${row('Offer/est. payment',v=>anyEstLine(v))}
     ${row('Kilometres',v=>fmtKm(v.km))}
     ${row('Colour',v=>v.colour)}
     ${row('Stock #',v=>v.stock)}
