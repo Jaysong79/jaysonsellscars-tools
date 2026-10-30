@@ -675,7 +675,7 @@ const STUDIO={'RVR':'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMC
 const PH_SVG='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="800" height="600" fill="%23EDECE8"/><text x="400" y="292" font-family="Arial" font-size="27" font-weight="bold" fill="%23555" text-anchor="middle">PHOTOS COMING SOON</text><text x="400" y="326" font-family="Arial" font-size="17" fill="%23777" text-anchor="middle">Ask Jayson — he will send you pictures</text></svg>';
 const MODEL_SLUG={'Outlander':'outlander','Outlander PHEV':'outlander-phev','Eclipse Cross':'eclipse-cross','RVR':'rvr','Eclipse Sportback':'eclipse-sportback'};
 function trimSlugP(model,trim){ var t=String(trim||'').toLowerCase(); if(/noir/.test(t)) return 'gt-noir'; if(model==='RVR') return t.replace(/\s+/g,'-'); return t.replace(/\s*(s-awc|awc|fwd)\b/g,' ').trim().replace(/\s+/g,'-'); }
-const TRIM_FB={'new-outlander-sel-black.jpg':'new-outlander-sel-grey.jpg','new-outlander-gt-black.jpg':'new-outlander-gt-xfu.jpg','new-outlander-phev-gt-black.jpg':'new-outlander-phev-gt-xfu.jpg','new-outlander-phev-gt-noir-white.jpg':'new-outlander-phev-gt-noir-grey.jpg'};
+const TRIM_FB={}; /* Oct 30 (later): Mitsubishi Canada DOES publish the black (X47) and NOIR-white (XW4) sets — every feed combo has exact files, so no trim fallbacks remain. */
 function colourImg(v){ const f='new-'+(MODEL_SLUG[v.model]||'outlander')+'-'+trimSlugP(v.model,v.trim)+'-'+String(v.colour||'silver').toLowerCase()+'.jpg'; return 'https://jaysong79.github.io/jaysonsellscars-tools/assets/'+(TRIM_FB[f]||f); }
 function modelImg(v){ return 'https://jaysong79.github.io/jaysonsellscars-tools/assets/new-'+(MODEL_SLUG[v.model]||'outlander')+'-'+String(v.colour||'silver').toLowerCase()+'.jpg'; }
 function imgCheck(el,stock){
@@ -770,19 +770,25 @@ let curVeh=null;
 function toggleMenu(){ document.getElementById('mnav').classList.toggle('open'); }
 function closeMenu(){ document.getElementById('mnav').classList.remove('open'); }
 function studioImg(v){ const c=colourImg(v); return 'https://jaysong79.github.io/jaysonsellscars-tools/assets/studio-'+c.split('/').pop(); }
+const VIEW_SFX=['','-fl','-fr','-rl','-rr'];
+function viewImg(v,i){ if(i===0) return colourImg(v); return colourImg(v).replace(/\.jpg$/, VIEW_SFX[i]+'.jpg'); }
 const MODEL_GALLERY={}; /* Jayson, Oct 30: new-vehicle views show ONLY the exact trim+colour render — no lifestyle/model photos mixed in. */
 function capText(i){ const vs=window.__galViews, v=window.__galVeh; if(!vs||!v) return ''; return vs[i].cap==='exact' ? 'Manufacturer image \u2014 '+v.year+' '+v.model+' '+v.trim+' in '+v.colour+'. This vehicle is brand new at Valley Mitsubishi; ask Jayson and he\u2019ll send real photos of the actual unit.' : v.model+' \u2014 Mitsubishi Canada photo. Interior and equipment may vary by trim; the first view shows this exact vehicle\u2019s trim and colour.'; }
-function galSet(i){ const vs=window.__galViews; if(!vs||!vs.length) return; window.__galIdx=((i%vs.length)+vs.length)%vs.length; const m=document.getElementById('gal-main'); if(m) m.src=vs[window.__galIdx].src; document.querySelectorAll('.vdot').forEach((d,j)=>d.classList.toggle('on', j===window.__galIdx)); const c=document.getElementById('gal-cap'); if(c) c.textContent=capText(window.__galIdx); }
-function galStep(d){ galSet((window.__galIdx||0)+d); }
+function galAliveIdx(){ const vs=window.__galViews||[], dead=window.__galDead||{}; return vs.map((_,i)=>i).filter(i=>!dead[i]); }
+function galSet(i){ const vs=window.__galViews; if(!vs||!vs.length) return; const alive=galAliveIdx(); if(!alive.length) return; const k=((i%alive.length)+alive.length)%alive.length; window.__galIdx=alive[k]; const m=document.getElementById('gal-main'); if(m) m.src=vs[window.__galIdx].src; document.querySelectorAll('.vdot').forEach((d,j)=>d.classList.toggle('on', alive[k]===j)); const c=document.getElementById('gal-cap'); if(c) c.textContent=capText(window.__galIdx); }
+function galGo(j){ const alive=galAliveIdx(); const p=alive.indexOf(j); if(p>-1) galSet(p); }
+function galStep(d){ const alive=galAliveIdx(); const p=alive.indexOf(window.__galIdx||0); galSet((p<0?0:p)+d); }
+function galDrop(i){ window.__galDead=window.__galDead||{}; window.__galDead[i]=true; const dots=document.querySelectorAll('.vdot'); if(dots[i]) dots[i].remove(); if(window.__galIdx===i) galSet(0); }
 function openVehicle(stock){
   const v=VEHICLES.find(x=>x.stock===stock); if(!v)return; curVeh=v; go('vehicle');
   const bk=document.getElementById('veh-back'); bk.textContent = v.cond==='New' ? '← ALL NEW VEHICLES' : '← ALL PRE-OWNED'; bk.setAttribute('onclick', `go('${v.cond==='New'?'shopnew':'shop'}');return false`);
   const gal = v.cond==='New' ? [colourImg(v)] : [1,2,3,4,5,6].map(i=>photo(v,i));
   let galHTML='';
   if(v.cond==='New'){
-    const views=[{src:studioImg(v),cap:'exact'}].concat((MODEL_GALLERY[v.model]||[]).map(g=>({src:g,cap:'model'})));
-    window.__galViews=views; window.__galIdx=0; window.__galVeh=v;
-    galHTML=`<div class="gal"><div class="main viewer" id="gal-stage"><img id="gal-main" src="${views[0].src}" alt="${v.year} ${v.make} ${v.model}" ${FALLBACK}>${views.length>1?`<button class="varrow left" onclick="galStep(-1)" aria-label="Previous view">\u2039</button><button class="varrow right" onclick="galStep(1)" aria-label="Next view">\u203a</button><div class="vdots">${views.map((_,i)=>`<span class="vdot${i===0?' on':''}" onclick="galSet(${i})"></span>`).join('')}</div>`:''}</div><p class="fine" id="gal-cap"></p></div>`;
+    const views=[0,1,2,3,4].map(i=>({src:viewImg(v,i),cap:'exact'}));
+    window.__galViews=views; window.__galIdx=0; window.__galVeh=v; window.__galDead={};
+    views.forEach((vw,i)=>{ if(i===0) return; const im=new Image(); im.onerror=()=>galDrop(i); im.src=vw.src; });
+    galHTML=`<div class="gal"><div class="main viewer" id="gal-stage"><img id="gal-main" src="${views[0].src}" alt="${v.year} ${v.make} ${v.model}" ${FALLBACK}><button class="varrow left" onclick="galStep(-1)" aria-label="Previous view">\u2039</button><button class="varrow right" onclick="galStep(1)" aria-label="Next view">\u203a</button><div class="vdots">${views.map((_,i)=>`<span class="vdot${i===0?' on':''}" onclick="galGo(${i})"></span>`).join('')}</div></div><p class="fine" id="gal-cap"></p></div>`;
   } else {
     galHTML=`<div class="gal"><div class="main"><img id="gal-main" src="${gal[0]}" alt="${v.year} ${v.make} ${v.model}" ${FALLBACK}></div><div class="thumbs">${gal.map((g,i)=>`<img src="${g}" data-i="${i}" class="${i===0?'on':''}" onclick="swapPhoto(this,'${g}')" onerror="this.remove()">`).join('')}</div><p class="fine">Photos: Valley Mitsubishi\u2019s own listing photos for this exact vehicle. Gallery shows the first six; the full set lives on the dealer listing.</p></div>`;
   }
