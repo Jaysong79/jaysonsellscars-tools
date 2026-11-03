@@ -1,0 +1,270 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<!-- Jaydog install pass, Nov 2, 2026: Eclipse Cross + Sportback EV Tech Pkg photos wired to Mitsubishi Canada DAM paths verified live through Mitsubishi's own configurator API (both were marked photo-less in the handoff draft); consent checkbox added to match Jayson's trade-in form; page-level title/body rules removed for Squarespace Code Block use. Data and copy otherwise exactly as handed over. -->
+<style>
+/* Layout: phone first = model tabs, stage, choices stacked, sticky action bar.
+   900px+ = sticky stage left, choices right. Dark showroom look by design. */
+#jsc-cfg{
+  --bg:#0b0c0e; --surface:#141619; --surface-2:#1c1f23; --line:#2b2f35;
+  --fg:#f2f3f4; --muted:#9ba1a8; --silver:#c8ccd2; --red:#d6001c; --red-hover:#b50018; --ok:#4fbf7a; --warn:#e0a33a;
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+  background:var(--bg); color:var(--fg); font-family:var(--f-body); font-size:16px; line-height:1.5;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+/* host page supplies the page background; the panel below carries its own */
+#jsc-cfg *,#jsc-cfg *::before,#jsc-cfg *::after{box-sizing:border-box}
+#jsc-cfg [hidden]{display:none!important}
+:where(#jsc-cfg) :where(button,input,select,textarea){font:inherit;color:inherit}
+:where(#jsc-cfg) a{color:inherit}
+#jsc-cfg :focus-visible{outline:2px solid var(--silver);outline-offset:3px}
+.jsc-wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+.jsc-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-block:16px;border-bottom:1px solid var(--line)}
+.jsc-brand{font-family:var(--f-display);font-stretch:125%;font-weight:800;letter-spacing:.02em;text-transform:uppercase;font-size:15px}
+.jsc-brand span{color:var(--muted);font-weight:500}
+.jsc-dealer{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+
+/* model tabs */
+.jsc-models{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-block:14px 0;-webkit-overflow-scrolling:touch}
+.jsc-models::-webkit-scrollbar{display:none}
+.jsc-model{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:transparent;border:1px solid var(--line);border-radius:4px;padding:10px 14px;cursor:pointer;min-height:56px;text-align:left}
+.jsc-model:hover{border-color:#40454c}
+.jsc-model[aria-selected="true"]{border-color:var(--fg);background:var(--surface-2)}
+.jsc-model b{font-family:var(--f-display);font-weight:700;font-stretch:90%;font-size:15px;letter-spacing:.02em;white-space:nowrap}
+.jsc-model span{font-family:var(--f-mono);font-size:11px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+.jsc-grid{display:grid;grid-template-columns:1fr;gap:24px;padding-block:20px 120px}
+@media (min-width:900px){.jsc-grid{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;padding-bottom:48px}.jsc-stagecol{position:sticky;top:16px;align-self:start}}
+.jsc-stagecol,.jsc-panel{min-width:0}
+
+.jsc-eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.jsc-h1{font-family:var(--f-display);font-stretch:62%;font-weight:800;text-transform:uppercase;line-height:.92;letter-spacing:.005em;font-size:clamp(44px,11vw,88px);margin:6px 0 0;text-wrap:balance}
+.jsc-h1 em{font-style:normal;color:var(--silver);font-weight:500}
+
+.jsc-stage{position:relative;margin-top:14px;aspect-ratio:4/3;max-width:100%;background:radial-gradient(120% 70% at 50% 78%,#2a2e34 0%,#15171a 55%,var(--bg) 100%);border-radius:4px;overflow:hidden;touch-action:pan-y}
+.jsc-stage::after{content:"";position:absolute;left:12%;right:12%;bottom:15%;height:7%;background:radial-gradient(50% 50% at 50% 50%,rgba(0,0,0,.65),transparent 70%);z-index:0}
+.jsc-stage img.jsc-car{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:1;transition:opacity .45s ease;user-select:none;-webkit-user-drag:none}
+.jsc-stage img.jsc-hide{opacity:0}
+.jsc-stage-msg{position:absolute;inset:auto 0 12px;text-align:center;font-size:13px;color:var(--muted);z-index:2;padding-inline:16px}
+.jsc-stage-tag{position:absolute;left:12px;top:12px;z-index:2;font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--silver);background:rgba(11,12,14,.6);padding:4px 8px;border-radius:2px}
+.jsc-noimg{position:absolute;inset:0;z-index:2;display:grid;place-items:center;align-content:center;gap:14px;padding:24px;text-align:center}
+.jsc-noimg[hidden]{display:none}
+.jsc-noimg img{width:min(46%,220px);aspect-ratio:1;object-fit:cover;border-radius:50%;outline:1px solid var(--line);outline-offset:4px;background:var(--surface-2)}
+.jsc-noimg b{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.05em;font-size:18px}
+.jsc-noimg p{margin:0;font-size:13px;color:var(--muted);max-width:34ch}
+.jsc-angles{display:flex;gap:6px;margin-top:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.jsc-angles::-webkit-scrollbar{display:none}
+.jsc-angle{flex:0 0 auto;background:transparent;border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13px;color:var(--muted);cursor:pointer;min-height:40px}
+.jsc-angle[aria-pressed="true"]{border-color:var(--fg);color:var(--fg)}
+.jsc-hint{font-size:12px;color:var(--muted);margin-top:6px}
+
+.jsc-sec{padding-block:20px;border-top:1px solid var(--line)}
+.jsc-sec:first-child{border-top:0;padding-top:0}
+.jsc-sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+.jsc-h2{font-family:var(--f-display);font-stretch:100%;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:14px;margin:0}
+.jsc-step{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+
+.jsc-trims{display:grid;grid-template-columns:1fr;gap:8px}
+@media (min-width:520px) and (max-width:899px){.jsc-trims{grid-template-columns:1fr 1fr}}
+.jsc-trim{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;cursor:pointer;min-height:56px}
+.jsc-trim:hover{border-color:#40454c}
+.jsc-trim[aria-checked="true"]{border-color:var(--fg);background:var(--surface-2)}
+.jsc-trim-name{font-family:var(--f-display);font-weight:700;font-stretch:90%;font-size:16px;letter-spacing:.02em}
+.jsc-trim-price{font-family:var(--f-mono);font-size:13px;color:var(--silver);white-space:nowrap;font-variant-numeric:tabular-nums}
+.jsc-trim-price small{color:var(--muted);font-size:10px;letter-spacing:.08em;display:block;text-align:right}
+.jsc-feats{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:6px;font-size:14px;color:var(--silver)}
+.jsc-feats li{padding-left:16px;position:relative}
+.jsc-feats li::before{content:"";position:absolute;left:0;top:.65em;width:6px;height:1px;background:var(--muted)}
+.jsc-feats li.jsc-lead{padding-left:0;color:var(--muted);font-size:13px}
+.jsc-feats li.jsc-lead::before{display:none}
+
+.jsc-cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:10px}
+.jsc-col{background:none;border:0;padding:0;cursor:pointer;text-align:center}
+.jsc-col img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:2px solid transparent;outline:1px solid var(--line);outline-offset:2px;background:var(--surface-2)}
+.jsc-col[aria-checked="true"] img{border-color:var(--bg);outline:2px solid var(--fg)}
+.jsc-col-name{display:block;font-size:11px;line-height:1.25;color:var(--muted);margin-top:6px}
+.jsc-col[aria-checked="true"] .jsc-col-name{color:var(--fg)}
+.jsc-col.jsc-col-text{display:flex;align-items:center;justify-content:center;min-height:48px;border:1px solid var(--line);border-radius:3px;padding:8px 10px;background:var(--surface)}
+.jsc-col.jsc-col-text .jsc-col-name{margin:0;font-size:13px}
+.jsc-col.jsc-col-text[aria-checked="true"]{border-color:var(--fg);background:var(--surface-2)}
+.jsc-cols:has(.jsc-col-text){grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+.jsc-model i{font-style:normal;font-family:var(--f-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--red);padding:1px 6px;border-radius:2px}
+.jsc-colsel{margin-top:12px;font-size:14px}
+.jsc-colsel b{font-weight:600}
+.jsc-colsel span{font-family:var(--f-mono);color:var(--silver);font-size:13px}
+
+.jsc-sum{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px}
+.jsc-sum-row{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding-block:4px;color:var(--silver)}
+.jsc-sum-row span:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.jsc-sum-total{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-top:1px solid var(--line);margin-top:8px;padding-top:12px}
+.jsc-sum-total span:first-child{font-family:var(--f-display);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:13px}
+.jsc-sum-total span:last-child{font-family:var(--f-display);font-stretch:80%;font-weight:800;font-size:30px;font-variant-numeric:tabular-nums}
+.jsc-note{font-size:12px;color:var(--muted);margin:10px 0 0}
+.jsc-fine{font-size:11px;line-height:1.5;color:var(--muted);margin:12px 0 0}
+.jsc-consent{display:flex;gap:9px;align-items:flex-start;margin:2px 0 10px;cursor:pointer}
+.jsc-consent input{width:19px;height:19px;margin-top:1px;accent-color:var(--red);flex:none;cursor:pointer}
+.jsc-consent span{font-size:13px;color:var(--muted);line-height:1.5}
+.jsc-consent b{color:var(--fg)}
+
+.jsc-actions{display:grid;gap:8px;margin-top:14px}
+.jsc-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:12px 18px;border-radius:3px;border:1px solid var(--line);background:transparent;cursor:pointer;font-family:var(--f-display);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:13px;text-decoration:none;text-align:center}
+.jsc-btn:hover{border-color:var(--silver)}
+.jsc-btn-primary{background:var(--red);border-color:var(--red);color:#fff}
+.jsc-btn-primary:hover{background:var(--red-hover);border-color:var(--red-hover)}
+.jsc-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.jsc-copied{font-size:12px;color:var(--ok);min-height:18px;margin-top:4px;text-align:center;word-break:break-all}
+
+.jsc-bar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(11,12,14,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:12px}
+.jsc-bar-info{flex:1;min-width:0}
+.jsc-bar-info b{display:block;font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jsc-bar-info span{font-family:var(--f-mono);font-size:12px;color:var(--silver)}
+.jsc-bar .jsc-btn{min-height:44px;padding:10px 16px;flex:0 0 auto}
+@media (min-width:900px){.jsc-bar{display:none}}
+
+.jsc-form{display:grid;gap:12px;margin-top:4px}
+.jsc-form[hidden]{display:none}
+.jsc-seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.jsc-seg button{min-height:44px;border:1px solid var(--line);background:transparent;border-radius:3px;cursor:pointer;font-size:14px;color:var(--muted)}
+.jsc-seg button[aria-pressed="true"]{border-color:var(--fg);color:var(--fg);background:var(--surface-2)}
+.jsc-field{display:grid;gap:4px}
+.jsc-field label{font-size:13px;color:var(--silver)}
+.jsc-field input,.jsc-field textarea{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:12px;font-size:16px;min-height:48px}
+.jsc-field textarea{min-height:84px;resize:vertical}
+.jsc-field input[aria-invalid="true"]{border-color:var(--warn)}
+.jsc-err{font-size:12px;color:var(--warn)}
+.jsc-two{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:520px){.jsc-two{grid-template-columns:1fr 1fr}}
+.jsc-buildchip{font-family:var(--f-mono);font-size:12px;color:var(--silver);background:var(--surface);border:1px dashed var(--line);border-radius:3px;padding:10px 12px}
+.jsc-done{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;display:grid;gap:10px}
+.jsc-done[hidden]{display:none}
+.jsc-done h3{margin:0;font-family:var(--f-display);text-transform:uppercase;letter-spacing:.05em;font-size:16px}
+.jsc-done p{margin:0;font-size:14px;color:var(--silver)}
+.jsc-contactline{font-family:var(--f-mono);font-size:13px;user-select:all}
+
+.jsc-foot{border-top:1px solid var(--line);padding-block:20px 28px;font-size:12px;color:var(--muted);display:grid;gap:6px}
+@media (prefers-reduced-motion:reduce){#jsc-cfg *{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<div id="jsc-cfg">
+  <div class="jsc-wrap">
+    <header class="jsc-top">
+      <div class="jsc-brand">JaysonSells<span>Cars</span></div>
+      <div class="jsc-dealer">Valley Mitsubishi | Dealer #30446</div>
+    </header>
+
+    <nav class="jsc-models" role="tablist" aria-label="Choose a model" id="jsc-models"></nav>
+
+    <div class="jsc-grid">
+      <div class="jsc-stagecol">
+        <div class="jsc-eyebrow">Build &amp; price · BC pricing</div>
+        <h1 class="jsc-h1" id="jsc-title">2026 Outlander <em>PHEV</em></h1>
+        <div class="jsc-stage" id="jsc-stage" aria-live="polite">
+          <div class="jsc-stage-tag" id="jsc-stagetag"></div>
+          <img id="jsc-imgA" class="jsc-car" alt="" decoding="async">
+          <img id="jsc-imgB" class="jsc-car jsc-hide" alt="" decoding="async">
+          <div class="jsc-noimg" id="jsc-noimg" hidden>
+            <img id="jsc-noimg-sw" alt="">
+            <b id="jsc-noimg-name"></b>
+            <p>Mitsubishi Canada hasn't published configurator photos of this vehicle yet. Your build details and price are still exact.</p>
+          </div>
+          <div class="jsc-stage-msg" id="jsc-stagemsg" hidden>Image unavailable right now. Your build details are still correct.</div>
+        </div>
+        <div class="jsc-angles" role="group" aria-label="View angle" id="jsc-angles"></div>
+        <div class="jsc-hint" id="jsc-hint">Swipe the vehicle or tap a view. Official Mitsubishi Canada images.</div>
+      </div>
+
+      <div class="jsc-panel">
+        <section class="jsc-sec">
+          <div class="jsc-sec-h"><h2 class="jsc-h2">Choose your trim</h2><span class="jsc-step">Step 1 of 3</span></div>
+          <div class="jsc-trims" role="radiogroup" aria-label="Trim" id="jsc-trims"></div>
+          <ul class="jsc-feats" id="jsc-feats"></ul>
+        </section>
+
+        <section class="jsc-sec">
+          <div class="jsc-sec-h"><h2 class="jsc-h2">Choose your colour</h2><span class="jsc-step">Step 2 of 3</span></div>
+          <div class="jsc-cols" role="radiogroup" aria-label="Exterior colour" id="jsc-cols"></div>
+          <div class="jsc-colsel" id="jsc-colsel"></div>
+        </section>
+
+        <section class="jsc-sec">
+          <div class="jsc-sec-h"><h2 class="jsc-h2">Your build</h2><span class="jsc-step">Step 3 of 3</span></div>
+          <div class="jsc-sum">
+            <div class="jsc-sum-row"><span id="jsc-s-trim"></span><span id="jsc-s-trimp"></span></div>
+            <div class="jsc-sum-row"><span id="jsc-s-col"></span><span id="jsc-s-colp"></span></div>
+            <div class="jsc-sum-total"><span>MSRP as built<sup>1</sup></span><span id="jsc-s-total"></span></div>
+            <p class="jsc-note">Freight &amp; PDI, fees and taxes are extra. Ask Jayson for the all-in price on this build, or on one already in stock.</p>
+          </div>
+          <div class="jsc-actions">
+            <button type="button" class="jsc-btn jsc-btn-primary" id="jsc-go-drive">Book a test drive in this build</button>
+            <button type="button" class="jsc-btn" id="jsc-go-send">Send this build to Jayson</button>
+            <div class="jsc-btn-row">
+              <a class="jsc-btn" id="jsc-stock" href="https://www.valleymitsubishi.ca/" target="_blank" rel="noopener">See in stock</a>
+              <button type="button" class="jsc-btn" id="jsc-share">Copy build link</button>
+            </div>
+            <div class="jsc-copied" id="jsc-copied" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="jsc-sec" id="jsc-lead-sec">
+          <div class="jsc-sec-h"><h2 class="jsc-h2" id="jsc-lead-h">Book a test drive in this build</h2></div>
+          <form class="jsc-form" id="jsc-form" novalidate>
+            <div class="jsc-seg" role="group" aria-label="What would you like?">
+              <button type="button" id="jsc-mode-drive" aria-pressed="true">Book a test drive</button>
+              <button type="button" id="jsc-mode-send" aria-pressed="false">Send me details</button>
+            </div>
+            <div class="jsc-buildchip" id="jsc-buildchip"></div>
+            <div class="jsc-field">
+              <label for="jsc-name">Your name</label>
+              <input id="jsc-name" name="name" autocomplete="name" required>
+              <div class="jsc-err" id="jsc-name-err"></div>
+            </div>
+            <div class="jsc-two">
+              <div class="jsc-field">
+                <label for="jsc-phone">Phone</label>
+                <input id="jsc-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="250-555-0123">
+              </div>
+              <div class="jsc-field">
+                <label for="jsc-email">Email</label>
+                <input id="jsc-email" name="email" type="email" inputmode="email" autocomplete="email">
+              </div>
+            </div>
+            <div class="jsc-err" id="jsc-contact-err"></div>
+            <div class="jsc-field">
+              <label for="jsc-msg" id="jsc-msg-label">Best days or times for your drive (optional)</label>
+              <textarea id="jsc-msg" name="message"></textarea>
+            </div>
+            <label class="jsc-consent"><input type="checkbox" id="jsc-consent"><span><b>Yes — send Jayson my build.</b> I agree JaysonSellsCars and Valley Mitsubishi may contact me by phone, text, or email about my build. No obligation, ever.</span></label>
+            <div class="jsc-err" id="jsc-consent-err"></div>
+            <button type="submit" class="jsc-btn jsc-btn-primary" id="jsc-submit">Send to Jayson</button>
+            <p class="jsc-fine">Jayson replies to you personally. Your details are used only to answer this request.</p>
+          </form>
+          <div class="jsc-done" id="jsc-done" hidden>
+            <h3 id="jsc-done-h">Sent. Jayson will be in touch.</h3>
+            <p id="jsc-done-p">You'll hear from Jayson directly, not a call centre.</p>
+            <div class="jsc-buildchip" id="jsc-done-build"></div>
+            <button type="button" class="jsc-btn" id="jsc-copy-req" hidden>Copy my request</button>
+            <a class="jsc-btn jsc-btn-primary" id="jsc-mailto" hidden>Open email to Jayson</a>
+            <p>Or reach Jayson: <span class="jsc-contactline">778-363-1453</span> · <span class="jsc-contactline">info@jaysonsellscarsandtrucks.ca</span></p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <footer class="jsc-foot">
+      <div><b>Jayson Gazloff</b>, Sales Consultant · Valley Mitsubishi | Dealer #30446 · 2350 Enterprise Way, Kelowna, BC V1X 4H7 · Mon–Sat 10–5, Sun closed · 778-363-1453</div>
+      <div id="jsc-asof"></div>
+      <div><sup>1</sup> <span id="jsc-disc"></span></div>
+    </footer>
+  </div>
+
+  <div class="jsc-bar" id="jsc-bar">
+    <div class="jsc-bar-info"><b id="jsc-bar-name"></b><span id="jsc-bar-price"></span></div>
+    <button type="button" class="jsc-btn jsc-btn-primary" id="jsc-bar-go">Test drive</button>
+  </div>
+</div>
+
+
